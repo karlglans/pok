@@ -1,0 +1,13 @@
+/Debug
+/Release
+/ipch
+/Pok/Debug/*
+/Pok/Release/*
+/CalcTest/Debug/*
+/CalcTest/Release/*
+/Calc/Debug/*
+/Calc/Release/*
+
+*.sdf
+*.exe
+*.opensdf

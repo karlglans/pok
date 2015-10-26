@@ -75,6 +75,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CardDeck.h" />
     <ClInclude Include="CommonTypes.h" />
     <ClInclude Include="HandEvaluator.h" />
     <ClInclude Include="MiniSim.h" />
@@ -86,6 +87,7 @@
     <ClInclude Include="StartHandLogger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CardDeck.cpp" />
     <ClCompile Include="CommonTypes.cpp" />
     <ClCompile Include="HandEvaluator.cpp" />
     <ClCompile Include="MiniSim.cpp" />

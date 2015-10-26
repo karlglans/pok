@@ -12,7 +12,7 @@
 #include "Precalculated.h"
 
 
-int runSim(int nPlayers, int laps) {
+int runSimForLogger(int nPlayers, int laps) {
 	std::cout << "Runsim, players: " << nPlayers << " laps: " << laps << "\n";
 	MiniSim ms;
 	time_t now;
@@ -66,7 +66,7 @@ int runSim(int nPlayers, int laps) {
 	}
 
 	Precalculated precalced;
-	precalced.save(shl, nPlayers);
+	//precalced.save(shl, nPlayers);
 
 	time_t done;
 	time(&done);
@@ -84,10 +84,13 @@ int runSimCompair(int nPlayers, int laps) {
 	MiniSim ms;
 	time_t now;
 	time(&now);  /* get current time; same as: now = time(NULL)  */
-	ms._cards[5].value = 0;  ms._cards[5].color = 0;
-	ms._cards[6].value = 5;  ms._cards[6].color = 2;
-	MiniSimResults result;
-	float winChance = ms.runSim(nPlayers, gamePhase::preflop, laps, &result);
+
+	CardDeck cd;  MiniSimResults result;
+	Card cards[] = { { 0, 0 }, { 5, 2 } };
+	
+	cd.SetPlayerCards(cards);
+	
+	float winChance = ms.runSim(&cd, nPlayers, laps, &result);
 	result.print();
 	time_t done;
 	time(&done);
@@ -104,11 +107,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//for (int pl = 2; pl <= 8; pl++) runSim(pl, 1000 * 1000 * 1);
 	
-	runSim(3, 1000 * 1000 * 1000); 
+	runSimForLogger(4, 1 * 1000 * 1000); 
 	//runSim(9, 1000 * 1000 * 1000); 
 	//runSimCompair(9, 1000*1000*1);
 	
-	// done 1000M: 3, 10,
+	// done 1000M: 3, 4, 10,
 	// done 200M: 9
 
 	char cc;

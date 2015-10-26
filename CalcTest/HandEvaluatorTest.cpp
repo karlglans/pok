@@ -12,7 +12,7 @@ namespace CalcTest
 	{
 	public:
 
-		TEST_METHOD(addCardCount)
+		TEST_METHOD(HandEvaluator_addCardCount)
 		{
 			HandEvaluator ms;
 			Card someCards[4];
@@ -28,7 +28,7 @@ namespace CalcTest
 			Assert::AreEqual(2, result.colorFreq[0]); // found 2 x color 2
 		}
 
-		TEST_METHOD(addCardCount_CanAccumelateResult)
+		TEST_METHOD(HandEvaluator_addCardCount_CanAccumelateResult)
 		{
 			PreHandExamination phe; HandEvaluator he;
 			Card cards[] = { { 0, 0 }, { 12, 3 } };
@@ -46,37 +46,22 @@ namespace CalcTest
 			Assert::AreEqual(2, phe.valueFreq[12]);
 		}
 
-		TEST_METHOD(TestPreExamCards)
+		TEST_METHOD(HandEvaluator_preExamCards)
 		{
-			HandEvaluator ms;
-			Card card[5+2+2];
-
-			// 5 shared cards:
-			card[0].value = 1;			card[0].color = 1;
-			card[1].value = 1;			card[1].color = 2;
-			card[2].value = 1;			card[2].color = 0;
-			card[3].value = 3;			card[3].color = 0;
-			card[4].value = 3;			card[4].color = 0;
-
-			// cards for player 1:
-			card[5].value = 1;			card[5].color = 3;
-			card[6].value = 6;			card[6].color = 0;
-			// cards for player 2:
-			card[7].value = 3;			card[7].color = 2;
-			card[8].value = 4;			card[8].color = 2;
-
-			PreHandExamination* result = ms.preExamCards(card, 2);
-
-			// player 1
-			Assert::AreEqual(4, result[0].valueFreq[1]); // found 4 x value 1
-			Assert::AreEqual(4, result[0].colorFreq[0]); // found 4 x color 0
-
-			// player 2
-			Assert::AreEqual(3, result[1].valueFreq[3]); // found 3 x value 3
-			Assert::AreEqual(3, result[1].colorFreq[2]); // found 3 x color 2
+			PreHandExamination* phe = 0; HandEvaluator he; int player1 = 0, player2 = 1;
+			Card cards[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
+			, { 10, 1 }, { 2, 3 } // <-- player 1, gets a exra 10
+			, { 9, 2 }, { 8, 2 } // <-- player 2, has more color 2
+			};
+			phe = he.preExamCards(cards, 2);
+			// expect differences between hands
+			Assert::AreNotEqual(phe[player1].colorFreq[2], phe[player2].colorFreq[2]);
+			Assert::AreNotEqual(phe[player1].valueFreq[10], phe[player2].valueFreq[10]);
+			// expect same, both has just one card value 0.
+			Assert::AreEqual(phe[player1].valueFreq[0], phe[player1].valueFreq[0]);
 		}
 
-		TEST_METHOD(addColorBits_ValuesToBits)
+		TEST_METHOD(HandEvaluator_addColorBits_ValuesToBits)
 		{
 			Card card[5];
 
@@ -105,7 +90,7 @@ namespace CalcTest
 		// 4  -->  10000
 		// 5  -->  100000
 
-		TEST_METHOD(addColorBits_WillAccumelateResult)
+		TEST_METHOD(HandEvaluator_addColorBits_WillAccumelateResult)
 		{
 			Card card[5];
 			card[0].color = 3;			card[0].value = 4; // 10000
@@ -121,7 +106,7 @@ namespace CalcTest
 			Assert::AreEqual((unsigned int)bin<110000>::value, phe.uniHand);
 		}
 
-		TEST_METHOD(makeRatedFlushHand)
+		TEST_METHOD(HandEvaluator_makeRatedFlushHand)
 		{
 			HandEvaluator he;
 			HandRating* hr = he.makeRatedFlushHand(bin<1>::value);
@@ -139,7 +124,7 @@ namespace CalcTest
 			Assert::AreEqual((int)bin<10>::value, hr->values[HandRating::bestCard + 4]); // lowest card is the 3, 
 		}
 
-		TEST_METHOD(findStraightFlush)
+		TEST_METHOD(HandEvaluator_findStraightFlush)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 
@@ -159,7 +144,7 @@ namespace CalcTest
 			Assert::AreEqual((int)HandRating::undefined, handRated->values[HandRating::bestHand]);
 		}
 
-		TEST_METHOD(findStraight)
+		TEST_METHOD(HandEvaluator_findStraight)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 
@@ -194,7 +179,7 @@ namespace CalcTest
 			Assert::IsTrue(topStraightValue > nextLowestStraight);
 		}
 
-		TEST_METHOD(findFlush)
+		TEST_METHOD(HandEvaluator_findFlush)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 
@@ -213,7 +198,7 @@ namespace CalcTest
 		}
 
 
-		TEST_METHOD(findHands_findFour)
+		TEST_METHOD(HandEvaluator_findHands_findFour)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 
@@ -244,7 +229,7 @@ namespace CalcTest
 			Assert::AreEqual(11, (int)handRated->values[HandRating::bestCard + 1]);
 		}
 
-		TEST_METHOD(findHands_findHouse)
+		TEST_METHOD(HandEvaluator_findHands_findHouse)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 
@@ -275,7 +260,7 @@ namespace CalcTest
 			Assert::AreEqual(5, (int)handRated->values[HandRating::bestCard + 1]);
 		}
 
-		TEST_METHOD(findHands_findThree)
+		TEST_METHOD(HandEvaluator_findHands_findThree)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 			// 3x4					1x12					1x5
@@ -287,7 +272,7 @@ namespace CalcTest
 			Assert::AreEqual(5, (int)handRated->values[HandRating::bestCard + 2]);
 		}
 
-		TEST_METHOD(findHands_findTwoPair)
+		TEST_METHOD(HandEvaluator_findHands_findTwoPair)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 			// case 1: basic case, 2 pairs
@@ -310,7 +295,7 @@ namespace CalcTest
 			Assert::AreEqual(2, (int)handRated->values[HandRating::bestCard + 2]);
 		}
 
-		TEST_METHOD(findHands_findPair)
+		TEST_METHOD(HandEvaluator_findHands_findPair)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 			// 2x0 (0=two)			1x12					1x5						1x3
@@ -323,7 +308,7 @@ namespace CalcTest
 			Assert::AreEqual(3, (int)handRated->values[HandRating::bestCard + 3]);
 		}
 
-		TEST_METHOD(findHands_highCard)
+		TEST_METHOD(HandEvaluator_findHands_highCard)
 		{
 			PreHandExamination phe; HandEvaluator he; HandRating* handRated = NULL;
 			phe.valueFreq[11] = 1;	phe.valueFreq[10] = 1;	phe.valueFreq[6] = 1;	phe.valueFreq[5] = 1;	phe.valueFreq[2] = 1;
@@ -336,24 +321,11 @@ namespace CalcTest
 			Assert::AreEqual(2, (int)handRated->values[HandRating::bestCard + 4]);
 		}
 
-		TEST_METHOD(preExamCards)
-		{
-			PreHandExamination* phe = 0; HandEvaluator he; int player1 = 0, player2 = 1;
-			Card cards[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
-				, { 10, 1 }, { 2, 3 } // <-- player 1, gets a exra 10
-				, { 9, 2 }, { 8, 2 } // <-- player 2, has more color 2
-			};
-			phe = he.preExamCards(cards, 2);
-			// expect differences between hands
-			Assert::AreNotEqual(phe[player1].colorFreq[2],  phe[player2].colorFreq[2]);
-			Assert::AreNotEqual(phe[player1].valueFreq[10], phe[player2].valueFreq[10]);
-			// expect same, both has just one card value 0.
-			Assert::AreEqual(phe[player1].valueFreq[0], phe[player1].valueFreq[0]);
-		}
+		
 
 		
 
-		TEST_METHOD(won)
+		TEST_METHOD(HandEvaluator_won)
 		{
 			PreHandExamination* phe = 0; HandEvaluator he;
 
@@ -445,9 +417,19 @@ namespace CalcTest
 			Assert::AreEqual(2, Q4o_WinCount);
 		}
 
+		TEST_METHOD(HandEvaluator_winTest_winByHighCard)
+		{
+			PreHandExamination* phe = 0; HandEvaluator he; HandRating bestHand;
+			Card cards_v4[] = { { 0, 1 }, { 1, 1 }, { 4, 2 }, { 5, 2 }, { 6, 2 } // <-- shared
+			, { 8, 1 }, { 9, 3 } // <-- player, HK9
+			, { 8, 3 }, { 9, 1 } // <-- opponent, HK9
+			, { 8, 2 }, { 10, 1 } // <-- opponent, HK 10
+			};
+			bool won = he.won(3, cards_v4, &bestHand);
+			Assert::IsFalse(won);
+			Assert::AreEqual((int)HandRating::Hand::highcard, bestHand.values[0]);
+			Assert::AreEqual((int)10, bestHand.values[HandRating::bestCard]);
+		}
 
-		
-
-		
 	};
 }

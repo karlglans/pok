@@ -32,10 +32,13 @@
     <ClCompile Include="HandEvaluatorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameTest.cpp">
+    <ClCompile Include="StartHandLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StartHandLogger.cpp">
+    <ClCompile Include="CardDeckTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniSimTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

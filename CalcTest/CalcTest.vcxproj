@@ -86,8 +86,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="CardDeckTest.cpp" />
     <ClCompile Include="HandEvaluatorTest.cpp" />
+    <ClCompile Include="MiniSimTest.cpp" />
     <ClCompile Include="PreHandExaminationTest.cpp" />
     <ClCompile Include="StartHandLogger.cpp" />
     <ClCompile Include="stdafx.cpp">
