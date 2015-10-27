@@ -86,9 +86,7 @@ namespace CalcTest
 		// 0  -->  1
 		// 1  -->  10
 		// 2  -->  100
-		// 3  -->  1000
-		// 4  -->  10000
-		// 5  -->  100000
+		// n  -->  2^n
 
 		TEST_METHOD(HandEvaluator_addColorBits_WillAccumelateResult)
 		{
@@ -320,10 +318,6 @@ namespace CalcTest
 			Assert::AreEqual(5, (int)handRated->values[HandRating::bestCard + 3]);
 			Assert::AreEqual(2, (int)handRated->values[HandRating::bestCard + 4]);
 		}
-
-		
-
-		
 
 		TEST_METHOD(HandEvaluator_won)
 		{

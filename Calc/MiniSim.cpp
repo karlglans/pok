@@ -8,47 +8,6 @@
 #include <stdexcept>
 
 
-//void Deck::deal(Card* cards, int keep, int more)
-//{
-//	int pos;
-//	for (int n = 0; n < keep; n++){
-//		pos = cards[n].color * 13;
-//		pos += cards[n].value;
-//#ifdef _DEBUG
-//		if (pos >= 52)
-//			throw std::invalid_argument("Invalid Card value");
-//#endif
-//		taken[pos] = 1;
-//	}
-//	Card* moreCards = &cards[keep];
-//	for (int n = 0; n < more; n++){
-//		while (true){
-//			pos = rand() % 52;
-//			if (taken[pos] == 0) {
-//				taken[pos] = 1;
-//				moreCards[n].color = pos / 13;
-//				moreCards[n].value = pos % 13;
-//				break;
-//			}
-//		}
-//	}
-//}
-//
-//void Deck::reset() {
-//	// reset
-//	for (int n = 0; n < 52; n++)
-//		taken[n] = 0;
-//}
-//
-//int Deck::countTaken() {
-//	int c = 0;
-//	for (int n = 0; n < 52; n++){
-//		if (taken[n] == 1)
-//			c++;
-//	}
-//	return c;
-//}
-
 void showResult(char* str, int subWis, int nWins) {
 	char buffer[100];
 	sprintf_s(buffer, str, subWis, (100.0f *subWis) / (float)nWins);

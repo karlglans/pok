@@ -19,7 +19,7 @@ namespace CalcTest
 			bool suitedOut;
 			for (int high = 0; high < 13; high++){
 				for (int low = 0; low < 13; low++){
-					if (low <= high){ 
+					if (low <= high){
 						// test all possible suited cards:
 						if (high != low) { // suited cards cant be pairs
 							pp.set(high, low, true);
@@ -28,7 +28,7 @@ namespace CalcTest
 							Assert::AreEqual(high, highOut);
 							Assert::AreEqual(low, lowOut);
 							Assert::AreEqual(true, suitedOut);
-							
+
 						}
 						// test all possible offsuit cards:
 						pp.set(high, low, false);
@@ -56,7 +56,7 @@ namespace CalcTest
 						cards[0].color = 0;
 						if (v0 == v1)
 							cards[1].color = 1;
-						else 
+						else
 							cards[1].color = color; // either 0 or 1
 						cardPairValue = shl.makeCardPairValue(cards); // make a cardPairValue
 						Assert::IsTrue(cardPairValue < 169);
@@ -72,7 +72,7 @@ namespace CalcTest
 			//               startHandPair1:     startHandPair2:     startHandPair3:     startHandPair4:
 			//				 23s                 45s                 23s                 AA
 			Card cards[] = { { 0, 1 }, { 1, 1 }, { 2, 1 }, { 3, 1 }, { 0, 4 }, { 1, 4 }, { 12, 4 }, { 12, 1 } }; // {value, color}
-			
+
 			int numberOfPlayers = 4;
 			shl.addCardPair(cards, numberOfPlayers, false);
 			shl.addCardPair(&cards[2], numberOfPlayers, false);
@@ -81,7 +81,7 @@ namespace CalcTest
 
 			//                     pair, KK
 			Card notYetAdded[] = { { 11, 4 }, { 11, 3 } };
-			
+
 			int startHandValue_23s = shl.makeCardPairValue(&cards[0]);
 			int startHandValue_45s = shl.makeCardPairValue(&cards[2]);
 			int startHandValue_AA = shl.makeCardPairValue(&cards[6]);
@@ -105,11 +105,11 @@ namespace CalcTest
 			Card cards[] = { { 10, 1 }, { 11, 1 }, { 2, 1 }, { 3, 1 }, { 2, 4 }, { 3, 4 } }; // {value, color}
 			int twoPlayers = 2, threePlayes = 3;
 			// add 2 startPairs to a 2 player Game
-			shl.addCardPair(&cards[0], twoPlayers, false); 
+			shl.addCardPair(&cards[0], twoPlayers, false);
 			shl.addCardPair(&cards[2], twoPlayers, false);
 			// add 3 startPairs to a 3 player Game
-			shl.addCardPair(&cards[0], threePlayes, false); 
-			shl.addCardPair(&cards[2], threePlayes, false); 
+			shl.addCardPair(&cards[0], threePlayes, false);
+			shl.addCardPair(&cards[2], threePlayes, false);
 			shl.addCardPair(&cards[4], threePlayes, false);
 
 			int startHandValue_QKs = shl.makeCardPairValue(&cards[0]);
@@ -158,7 +158,7 @@ namespace CalcTest
 
 			Precalculated pre;
 			pre.writeResultsToFileBuffer(resultsBuffer, &shl, nPlayers);
-			
+
 			float spotForPair_22 = resultsBuffer[cardPairIdx_22];
 			float spotForPair_33 = resultsBuffer[cardPairIdx_33];
 			float spotForPair_QKo = resultsBuffer[cardPairIdx_QKo];
@@ -168,7 +168,19 @@ namespace CalcTest
 			Assert::IsTrue(spotForPair_QKo > 0.0f); // 3rd place
 		}
 
+		TEST_METHOD(MakeRanking_)
+		{
+			float rating[169];
+			float winchance[] = { 0.01f, 0.02f, 0.5f, 0.04f, 0.05f }; // no order
 
-		//Precalculated::writeResultsToFileBuffer(pResults, StartHandLogger* shl, int players)
+			MakeRanking aa(5); // functor, 5 items rated
+			aa(winchance, rating);
+
+			Assert::IsTrue(rating[4] > 0.5); // next higest, should be equal or better then 50%
+			Assert::IsTrue(rating[2] == 1.0); // highest, should be equal or better then 100%
+			Assert::IsTrue(rating[0] < 0.5); // lowest, should be less then 50%
+			Assert::IsTrue(rating[1] < 0.5); // lowest, should be less then 50%
+		}
+
 	};
 }

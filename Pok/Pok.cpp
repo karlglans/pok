@@ -13,15 +13,17 @@
 
 
 int runSimForLogger(int nPlayers, int laps) {
-	std::cout << "Runsim, players: " << nPlayers << " laps: " << laps << "\n";
+	std::cout << "runSimForLogger, players: " << nPlayers << " laps: " << laps << std::endl;
 	MiniSim ms;
 	time_t now;
-	time(&now); 
+	time(&now);
+	Precalculated precalced;
 	StartHandLogger* shl = new StartHandLogger();
 	ms.runForLogger(nPlayers, laps, shl);
 
 	struct StartPair{
 		float winchance;
+		float above;
 		int count;
 		int wins;
 		int handPair;
@@ -31,6 +33,8 @@ int runSimForLogger(int nPlayers, int laps) {
 	};
 	std::vector<StartPair> vec(169);
 
+	float* aboveArray = precalced.GetAboveArray(nPlayers);
+
 	StartPair sp;  PairPos hp;
 	int cDetected = 0;
 	for (int pair = 0; pair < 169; pair++){
@@ -39,6 +43,7 @@ int runSimForLogger(int nPlayers, int laps) {
 			sp.wins = shl->getWinningPairCount(nPlayers, pair);
 			sp.winchance = sp.wins / (float)sp.count;
 			sp.handPair = pair;
+			sp.above = aboveArray[pair];
 			hp.pos = pair;
 			hp.get(&sp.high, &sp.low, &sp.suit);
 			cDetected++;
@@ -52,20 +57,20 @@ int runSimForLogger(int nPlayers, int laps) {
 		return a.winchance > b.winchance;
 	});
 
-	std::cout << "detected: " << cDetected << "\n";
+	std::cout << "detected: " << cDetected << std::endl;
 	char buffer[100];
 	char *suited = "s", *offsiut = "", *sss = 0;
 
-	for (int r = 0; r < 20; r++) {
+	for (int r = 0; r < 169; r++) {
 		//std::cout << " : " << vec[r].winchance << " c: "<< vec[r].count << "\n";
 		if (vec[r].suit)
 			sss = suited;
 		sss = vec[r].suit ? suited : offsiut;
-		sprintf_s(buffer, "%2.i %2.i %02.i%s\t %5.2f %u \n", r + 1, vec[r].high, vec[r].low, sss, vec[r].winchance, vec[r].count);
+		sprintf_s(buffer, "%02.i %02.d %02.u%s\t %5.2f %u above: %4.4f \n", r + 1, vec[r].high, vec[r].low, sss, 
+			vec[r].winchance, vec[r].count, vec[r].above);
 		printf(buffer);
 	}
 
-	Precalculated precalced;
 	//precalced.save(shl, nPlayers);
 
 	time_t done;

@@ -60,15 +60,35 @@ void Precalculated::save(StartHandLogger* shl, int nPlayers) {
 
 Precalculated::Precalculated() {
 	startPairWinchance = new float[StartHandLogger::numb_starthands * 9];
+	startPairAbove = new float[StartHandLogger::numb_starthands * 9];
 	readFile();
+	rankStartPairs();
 }
+
+// looks at startPairWinchance and builds winChanceArray from it.
+void Precalculated::rankStartPairs() {
+	MakeRanking aa(StartHandLogger::numb_starthands);
+	float *winChanceArray, *dest;
+	for (int p = 2; p <= 10; p++){
+		winChanceArray = getWinChance(p);
+		dest = GetAboveArray(p);
+		aa(winChanceArray, dest);
+	}
+}
+
 Precalculated::~Precalculated() {
 	delete[] startPairWinchance;
+	delete[] startPairAbove;
 }
 
 float* Precalculated::getWinChance(int nPlayers) {
 	int startPoint = StartHandLogger::numb_starthands*(nPlayers - 2);
 	return &startPairWinchance[startPoint];
+}
+
+float* Precalculated::GetAboveArray(int nPlayers) {
+	int startPoint = StartHandLogger::numb_starthands*(nPlayers - 2);
+	return &startPairAbove[startPoint];
 }
 
 void Precalculated::readFile() {
@@ -77,4 +97,33 @@ void Precalculated::readFile() {
 	file.seekg(0, file.beg);
 	file.read((char*)startPairWinchance, sizeof(float)*StartHandLogger::numb_starthands * 9);
 	file.close();
+}
+
+
+
+// src[handPair] = winchance
+// dst[handPair] = rating, thats a value that shows how strong the hand is. Rating 0.4 mean it beats 40 of the other hands
+void MakeRanking::operator()(float *src, float *dst) {
+	struct Src{
+		int pos;
+		float rank; // [0, 1]
+		float value;
+	};
+
+	vector<Src> srcItems(len);
+	for (int i = 0; i < len; i++) {
+		srcItems[i].pos = i;
+		srcItems[i].value = src[i];
+	}
+	
+	// rearrange
+	sort(srcItems.begin(), srcItems.end(), [](const Src & a, const Src & b) -> bool{
+		return a.value < b.value;
+	});
+
+	float max = (float)len;
+	// now they are sorted by value
+	for (int i = 0; i < len; i++) {
+		dst[srcItems[i].pos] = (i + 1) / max;
+	}
 }
