@@ -212,12 +212,18 @@ PreHandExamination* HandEvaluator::preExamCards(Card* pCards, int nPlayers) {
 //expects 5 first cards to be common cards, then 2 per player
 //returns true if fist player had the winning hand
 bool HandEvaluator::won(int nPlayers, Card *cards, HandRating* bestHand) {
+	return won(nPlayers, cards, bestHand, (bool*)0);
+}
+
+bool HandEvaluator::won(int nPlayers, Card *cards, HandRating* bestHand, bool* foldedSeats) {
 	PreHandExamination* pExamData = preExamCards(cards, nPlayers);
 	HandRating* hand = 0;
 	HandRating playerHand;
 	bestHand->reset();
 
 	for (int pl = 0; pl < nPlayers; pl++) {
+		if (foldedSeats != 0 && foldedSeats[pl])
+			continue;
 		hand = findStraightFlush(&pExamData[pl]);
 		if (*bestHand < *hand) {
 			*bestHand = *hand;
@@ -229,7 +235,6 @@ bool HandEvaluator::won(int nPlayers, Card *cards, HandRating* bestHand) {
 		if (pl == 0)
 			playerHand = *bestHand; // first loop elap, should be true
 	}
-	
 	return playerHand == *bestHand;
 }
 

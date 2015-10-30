@@ -10,6 +10,38 @@
 #include "PreHandExamination.h"
 #include "MiniSim.h"
 #include "Precalculated.h"
+#include "GameSim.h"
+
+// compair GameSim with mini sim
+void runGameSim(Precalculated* precalc) {
+	Card cards[] = { { 1, 0 }, { 5, 2 } };
+	GameSim gs(precalc);
+	char buffer[100]; int nSeats = 6, laps = 1000000;
+	sprintf_s(buffer, "runGameSim, nPlayers: %u\n", nSeats);
+	printf(buffer);
+
+	time_t now;
+	
+	time(&now);
+	gs.begin(cards, nSeats, 2, 100, 200);
+	float w = gs.getWinChance(laps); // not nLaps is not set outside yet
+	time_t done;
+	time(&done);
+
+	double seconds = difftime(done, now);
+	sprintf_s(buffer, "GameSim : win %.2f,  time: %.5f\n", w, seconds);
+	printf(buffer);
+
+	time(&now);
+	MiniSim ms;  CardDeck cd;  MiniSimResults result;
+	cd.SetPlayerCards(cards);
+	float miniWinChance = ms.runSim(&cd, nSeats, laps, &result);
+	time(&done);
+
+	seconds = difftime(done, now);
+	sprintf_s(buffer, "MiniSim : win %.2f,  time: %.5f\n", miniWinChance, seconds);
+	printf(buffer);
+}
 
 
 int runSimForLogger(int nPlayers, int laps) {
@@ -66,8 +98,8 @@ int runSimForLogger(int nPlayers, int laps) {
 		if (vec[r].suit)
 			sss = suited;
 		sss = vec[r].suit ? suited : offsiut;
-		sprintf_s(buffer, "%02.i %02.d %02.u%s\t %5.2f %u above: %4.4f \n", r + 1, vec[r].high, vec[r].low, sss, 
-			vec[r].winchance, vec[r].count, vec[r].above);
+		sprintf_s(buffer, "%02.i %02.d %02.u%s\t %02.d %5.2f %u above: %4.5f \n", r + 1, vec[r].high, vec[r].low, sss, 
+			vec[r].handPair, vec[r].winchance, vec[r].count, vec[r].above);
 		printf(buffer);
 	}
 
@@ -110,9 +142,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf("RUNNING DEBUG BUILD\n");
 #endif
 
+
+	Precalculated precalc;  SeatActionHistory sh;  CardDeck deck;  GameSim sm(&precalc);
+	//float* above = precalc.GetAboveArray(3);
+
+	runGameSim(&precalc);
+
 	//for (int pl = 2; pl <= 8; pl++) runSim(pl, 1000 * 1000 * 1);
 	
-	runSimForLogger(4, 1 * 1000 * 1000); 
+	//runSimForLogger(3, 1 * 1000 * 1000); 
 	//runSim(9, 1000 * 1000 * 1000); 
 	//runSimCompair(9, 1000*1000*1);
 	

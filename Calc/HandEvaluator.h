@@ -27,8 +27,9 @@ public:
 	HandRating* findStraightFlush(PreHandExamination* pHand);
 	HandRating* makeRatedFlushHand(int bitHand);
 	HandRating* findHouse(PreHandExamination* pHand);
-	bool won(int nPlayers, Card *cards, HandRating* bestHand); // StartHandLogger
+	bool won(int nPlayers, Card *cards, HandRating* bestHand); 
 	bool won(int nPlayers, Card *cards, HandRating* bestHand, StartHandLogger* log);
+	bool won(int nPlayers, Card *cards, HandRating* bestHand, bool* folded);
 	HandEvaluator() {}
 };
 

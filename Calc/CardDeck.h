@@ -4,10 +4,9 @@
 class CardDeck
 {
 	char _taken[52];
+	bool _keep[5 + 2 * 10]; // matches _cards
 	void addToTaken(Card* card);
-	std::vector<int> _added;
 	int _prevNumbTableCards; // so same cards can be filterd away
-	int _prevNumbPlayerCards;
 	void resetTaken();
 	void resetBeforeDeal();
 public:
@@ -15,6 +14,9 @@ public:
 	CardDeck();
 	void SetPlayerCards(Card* pair);
 	void SetTableCards(Card* cards, int nCards);
+	// mainly for testing
+	void setCardsForSeat(Card* pair, int seatIdx);
+	Card* getCardsForSeat(int);
 	int countAddedCards();
 	void deal(int nPlayers);
 };

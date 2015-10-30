@@ -87,9 +87,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CardDeckTest.cpp" />
+    <ClCompile Include="GameSimTest.cpp" />
     <ClCompile Include="HandEvaluatorTest.cpp" />
     <ClCompile Include="MiniSimTest.cpp" />
     <ClCompile Include="PreHandExaminationTest.cpp" />
+    <ClCompile Include="SeatActionHistoryTest.cpp" />
     <ClCompile Include="StartHandLogger.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

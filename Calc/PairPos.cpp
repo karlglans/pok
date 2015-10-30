@@ -1,4 +1,6 @@
+#include <stdexcept>
 #include "PairPos.h"
+
 
 int PairPos::set(int high, int low, bool suit) {
 	pos = 0;
@@ -54,4 +56,21 @@ void PairPos::get(int *high, int *low, bool *suit) {
 			poss++;
 		}
 	}
+}
+
+// the structure can be used as key to index between 169 fields
+int PairPos::set(const Card* pCards) {
+	int highest = pCards[0].value;
+	int lowest = pCards[1].value;
+	int b;
+	if (lowest > highest) {
+		b = lowest;
+		lowest = highest;
+		highest = b;
+	}
+#ifdef _DEBUG
+	if (lowest == highest && pCards[0].color == pCards[1].color)
+		throw std::invalid_argument("Suited pair can not be pairs");
+#endif
+	return set(highest, lowest, pCards[0].color == pCards[1].color);
 }

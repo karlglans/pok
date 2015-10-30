@@ -319,76 +319,47 @@ namespace CalcTest
 			Assert::AreEqual(2, (int)handRated->values[HandRating::bestCard + 4]);
 		}
 
-		TEST_METHOD(HandEvaluator_won)
+		TEST_METHOD(HandEvaluator_won_canWinAndCanLoose)
 		{
-			PreHandExamination* phe = 0; HandEvaluator he;
+			PreHandExamination* phe = 0; HandEvaluator he; HandRating bestHand;
 
-			// case 1: some1 else has a stromger hand
-			Card deal1cards[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
-			, { 10, 1 }, { 2, 3 } // <-- player, gets a extra 10
-			, { 9, 2 }, { 8, 2 } // <-- opponent 1, who has a straight flush
-			};
-			HandRating bestHand;
-			bool won = he.won(2, deal1cards, &bestHand);
-			Assert::IsFalse(won);
-
-			// case 2: player has the best hand
+			// case 1: player has the best hand
 			Card cards_v2[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
 			, { 9, 2 }, { 8, 2 } // <-- player 0, has a flush
 			, { 10, 1 }, { 2, 3 } // <-- opponent, gets a extra 10
 			};
-			won = he.won(2, cards_v2, &bestHand);
+			bool won = he.won(2, cards_v2, &bestHand);
 			Assert::IsTrue(won);
 
-
-			// case 3: player looses to a straight
+			// case 2: someone else has a better hand
 			Card cards_v3[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
 			, { 10, 1 }, { 2, 3 } // <-- player, pair 10
 			, { 9, 2 }, { 8, 1 } // <-- opponent, straight
 			};
 			won = he.won(2, cards_v3, &bestHand);
 			Assert::IsFalse(won);
-
-
-			// case 4: player looses to a hight card hand
-			Card cards_v4[] = { { 0, 1 }, { 1, 1 }, { 4, 2 }, { 5, 2 }, { 6, 2 } // <-- shared
-			, { 8, 1 }, { 9, 3 } // <-- player, HK9
-			, { 8, 3 }, { 9, 1 } // <-- opponent, HK9
-			, { 8, 2 }, { 10, 1 } // <-- opponent, HK 10
-			};
-			won = he.won(3, cards_v4, &bestHand);
-			Assert::AreEqual((int)HandRating::Hand::highcard, bestHand.values[0]);
 		}
 
-		TEST_METHOD(HandEvaluator_won_oneWinner)
+		TEST_METHOD(HandEvaluator_won_skipFolded)
 		{
-			PreHandExamination* phe = 0; HandEvaluator he; StartHandLogger shl;
+			PreHandExamination* phe = 0; HandEvaluator he; int nSeats = 2;
 
-			// case 1: some1 else has a stromger hand
+			//some1 else has a stronger hand
 			Card deal1cards[] = { { 0, 1 }, { 1, 1 }, { 10, 2 }, { 11, 2 }, { 12, 2 } // <-- shared
-			, { 10, 1 }, { 2, 3 } // <-- Q4o, player, gets a extra 10
-			, { 9, 2 }, { 8, 2 } // <-- Kn10s, opponent 1, who has a straight flush
+			, { 10, 1 }, { 2, 3 } // <-- player, gets a extra 10
+			, { 9, 2 }, { 8, 2 } // <-- opponent 1, who has a straight flush
 			};
 			HandRating bestHand;
-			int numbPlayers = 2;
-			bool won = he.won(numbPlayers, deal1cards, &bestHand, &shl);
-			Assert::IsFalse(won);
+			bool won = he.won(nSeats, deal1cards, &bestHand);
+			Assert::IsFalse(won); // when no folding its a loss
 
-			int cardPair_Q4o = shl.makeCardPairValue(&deal1cards[5]);
-			int cardPair_Kn10s = shl.makeCardPairValue(&deal1cards[5 + 2]);
+			bool folding[] = { false, true };
+			won = he.won(nSeats, deal1cards, &bestHand, folding);
+			Assert::IsTrue(won); // when folding its a win
 
-			int Q4o_count = shl.getStartHandCount(numbPlayers, cardPair_Q4o);
-			int Kn10s_count = shl.getStartHandCount(numbPlayers, cardPair_Kn10s);
-			int Q4o_WinCount = shl.getWinningPairCount(numbPlayers, cardPair_Q4o);
-			int Kn10s_WinCount = shl.getWinningPairCount(numbPlayers, cardPair_Kn10s);
-
-			Assert::AreEqual(1, Q4o_count);
-			Assert::AreEqual(1, Kn10s_count);
-			Assert::AreEqual(0, Q4o_WinCount);
-			Assert::AreEqual(1, Kn10s_WinCount);
 		}
 
-		TEST_METHOD(HandEvaluator_won_multipleWinners)
+		TEST_METHOD(HandEvaluator_won_withStarthandLogger)
 		{
 			PreHandExamination* phe = 0; HandEvaluator he; StartHandLogger shl;
 
@@ -409,20 +380,6 @@ namespace CalcTest
 
 			Assert::AreEqual(2, Q4o_count);
 			Assert::AreEqual(2, Q4o_WinCount);
-		}
-
-		TEST_METHOD(HandEvaluator_winTest_winByHighCard)
-		{
-			PreHandExamination* phe = 0; HandEvaluator he; HandRating bestHand;
-			Card cards_v4[] = { { 0, 1 }, { 1, 1 }, { 4, 2 }, { 5, 2 }, { 6, 2 } // <-- shared
-			, { 8, 1 }, { 9, 3 } // <-- player, HK9
-			, { 8, 3 }, { 9, 1 } // <-- opponent, HK9
-			, { 8, 2 }, { 10, 1 } // <-- opponent, HK 10
-			};
-			bool won = he.won(3, cards_v4, &bestHand);
-			Assert::IsFalse(won);
-			Assert::AreEqual((int)HandRating::Hand::highcard, bestHand.values[0]);
-			Assert::AreEqual((int)10, bestHand.values[HandRating::bestCard]);
 		}
 
 	};

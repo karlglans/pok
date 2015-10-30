@@ -1,5 +1,8 @@
 #pragma once
 
+enum gamePhase { preflop, flop, turn, river, over};
+enum gameAction { notActed, blinds, fold, check, call, raise };
+
 struct Card {
 	int value; // 0-12,	
 	int color; // 0-3

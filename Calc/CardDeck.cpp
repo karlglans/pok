@@ -6,7 +6,9 @@ CardDeck::CardDeck()
 	// reset
 	resetTaken();
 	_prevNumbTableCards = 0;
-	_prevNumbPlayerCards = 0;
+	const int max = 10 * 2 + 5;
+	for (int c = 0; c < max; c++)
+		_keep[c] = false;
 }
 
 void CardDeck::resetTaken(){
@@ -24,7 +26,6 @@ void CardDeck::addToTaken(Card* card) {
 	if (_taken[pos] == 1)
 		throw std::invalid_argument("already added");
 #endif
-	_added.push_back(pos);
 	_taken[pos] = 1;
 }
 
@@ -34,7 +35,17 @@ void CardDeck::SetPlayerCards(Card* pair)
 	addToTaken(&pair[1]);
 	_cards[5] = pair[0];
 	_cards[6] = pair[1];
-	_prevNumbPlayerCards = 2;
+	_keep[5] = _keep[6] = true;
+}
+
+void CardDeck::setCardsForSeat(Card* pair, int seatIdx)
+{
+	int pos = seatIdx * 2 + 5;
+	addToTaken(&pair[0]);
+	addToTaken(&pair[1]);
+	_cards[pos] = pair[0];
+	_cards[pos + 1] = pair[1];
+	_keep[pos] = _keep[pos + 1] = true;
 }
 
 void CardDeck::SetTableCards(Card* cards, int nCards)
@@ -42,52 +53,53 @@ void CardDeck::SetTableCards(Card* cards, int nCards)
 	for (int c = _prevNumbTableCards; c < nCards; c++){
 		addToTaken(&cards[c]);
 		_cards[c] = cards[c];
+		_keep[c] = true;
 	}
 	_prevNumbTableCards = nCards;
 }
 
 int CardDeck::countAddedCards(){
-	return _added.size();
+	int c = 0, nCardsInGame = 10 * 2 + 5; // maybe less
+	for (int i = 0; i < nCardsInGame; i++)
+		if (_keep[i]) 
+			c++;
+	return c;
 }
 
-// make sure the cards on the table and from players is added to taken
+// make sure the cards on the table and from players is added to taken again
 void CardDeck::resetBeforeDeal(){
 	resetTaken();
-	int dealtCards = _prevNumbTableCards + _prevNumbPlayerCards;
-	for (int i = 0; i < dealtCards; i++){
-		_taken[_added[i] ] = 1;
+
+	// make count keept cards
+	int nCardsInGame = 10 * 2 + 5; // maybe less 
+	for (int i = 0; i < nCardsInGame; i++) {
+		if (_keep[i])
+			addToTaken(&_cards[i]);
 	}
+}
+
+// player is seat 0
+Card* CardDeck::getCardsForSeat(int seatIdx){
+	return &_cards[5 + seatIdx * 2];
 }
 
 void CardDeck::deal(int nPlayers) {
 	resetBeforeDeal();
 	int pos;
+	int nCardsInGame = nPlayers * 2 + 5;
+	for (int k = 0; k < nCardsInGame; k++){
+		if (_keep[k]) 
+			continue;
+		while (true){
+			pos = rand() % 52;
+			if (_taken[pos] == 0) {
+				_taken[pos] = 1;
+				_cards[k].color = pos / 13;
+				_cards[k].value = pos % 13;
+				break;
+			}
+		}
+	}
 
-	// deal the missing cards on the table
-	for (int n = _prevNumbTableCards; n < 5; n++){
-		while (true){
-			pos = rand() % 52;
-			if (_taken[pos] == 0) {
-				_taken[pos] = 1;
-				_cards[n].color = pos / 13;
-				_cards[n].value = pos % 13;
-				break;
-			}
-		}
-	}
-	Card* oppCards = &_cards[5 + _prevNumbPlayerCards]; // skip cards on table and cards for player
-	int nCards = (nPlayers - 1) * 2;
-	if (_prevNumbPlayerCards == 0) // player cards has not been added, lets roll those too
-		nCards += 2;
-	for (int n = 0; n < nCards; n++){
-		while (true){
-			pos = rand() % 52;
-			if (_taken[pos] == 0) {
-				_taken[pos] = 1;
-				oppCards[n].color = pos / 13;
-				oppCards[n].value = pos % 13;
-				break;
-			}
-		}
-	}
 }
+

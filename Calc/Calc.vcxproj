@@ -84,6 +84,7 @@
     <ClInclude Include="PairPos.h" />
     <ClInclude Include="Precalculated.h" />
     <ClInclude Include="PreHandExamination.h" />
+    <ClInclude Include="SeatActionHistory.h" />
     <ClInclude Include="StartHandLogger.h" />
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +96,7 @@
     <ClCompile Include="PairPos.cpp" />
     <ClCompile Include="Precalculated.cpp" />
     <ClCompile Include="PreHandExamination.cpp" />
+    <ClCompile Include="SeatActionHistory.cpp" />
     <ClCompile Include="StartHandLogger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
